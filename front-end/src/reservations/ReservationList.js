@@ -1,9 +1,7 @@
-import { useHistory } from "react-router";
 import { updateReservationStatus } from "../utils/api";
 import ReservationItem from "./ReservationItem";
 
-export default function ReservationList({ reservations, setReservations }) {
-  const history = useHistory();
+export default function ReservationList({ reservations, setReservations, loadDashboard }) {
   const handleSeat = async (reservation_id) => {
     await updateReservationStatus(reservation_id, "seated");
   };
@@ -14,14 +12,7 @@ export default function ReservationList({ reservations, setReservations }) {
     );
     if (confirmed) {
       await updateReservationStatus(reservation_id, "cancelled");
-      setReservations(
-        reservations.map((reservation) =>
-          reservation.reservation_id === reservation_id
-            ? { ...reservation, status: "cancelled" }
-            : reservation
-        )
-      );
-      history.go(0);
+      await loadDashboard();
     }
   };
 

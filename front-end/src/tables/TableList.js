@@ -1,23 +1,8 @@
 // import axios from "axios";
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
-import { getTables, unseatReservation } from "../utils/api";
+import { unseatReservation } from "../utils/api";
 import TableItem from "./TableItem";
 
-export default function TableList() {
-  const [tables, setTables] = useState([]);
-  const history = useHistory();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    async function getTableList() {
-      let response = await getTables(controller.signal);
-      let tablesData = response.data.data;
-      setTables(tablesData);
-    }
-    getTableList();
-    return () => controller.abort();
-  }, []);
+export default function TableList({ tables, loadDashboard }) {
 
   const handleFinish = async (table_id) => {
     let confirmed = window.confirm(
@@ -25,11 +10,11 @@ export default function TableList() {
     );
     if (confirmed) {
       await unseatReservation(table_id);
-      history.go(0);
+      await loadDashboard();
     } else {
       return;
     }
-  };
+  }
 
   const tablesList = tables.map((table) => (
     <TableItem key={table.table_id} table={table} handleFinish={handleFinish} />
